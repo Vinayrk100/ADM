@@ -1,0 +1,17 @@
+<html>
+   <body>
+      <form action = "http://localhost:5000/books" method = "post">
+         <p>Books Suggestions:</p>
+  {% for b in book_details %}
+   <li>{{ b.book_title }}</li>
+          <li>{{ b.book_authors }}</li>
+          <li>{{ b.language_code }}</li>
+          <li>{{ b.book_rating_count }}</li>
+    <li>{{ b.Price }}</li>
+          <img src="{{b.image_url}}"/>
+  {% endfor %}
+         <p><input type = "submit" value = "Back" /></p>
+      </form>
+   </body>
+</html>
+

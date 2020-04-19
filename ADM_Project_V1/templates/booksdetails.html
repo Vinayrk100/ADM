@@ -1,0 +1,54 @@
+<html>
+   <body>
+      <form action = "http://localhost:5000/recommendation" method = "post">
+         <h3>you are our {{segment}} customer , you are eligible for : {{ promo[0] }}<h3>
+<!--   <p><input type = "submit" name = "prom" value="{{promo[0]}}"/></p>&ndash;&gt;-->
+
+          <h3>Recommendation based on Genres<h3>-->
+            {% for g in recommendations_genre %}
+              <p><input type = "submit" name = "title"  value="{{ g[10] }}"/></p>
+          <li>{{ g[10] }}</li>
+          <li>{{ g[5] }}</li>
+          <li>{{ g[12] }}</li>
+          <li>{{ g[16] }}</li>
+              <li>{{ g[4] }}</li>
+          <img src="{{g[13]}}"/>
+            {% endfor %}
+
+              <h3>Recommendation based on authors<h3>-->
+            {% for a in recommendations_author %}
+                  <p><input type = "submit" name = "title" value="{{ a[10] }}"/></p>
+          <li>{{ a[10] }}</li>
+          <li>{{ a[5] }}</li>
+          <li>{{ a[12] }}</li>
+          <li>{{ a[16] }}</li>
+          <li>{{ a[4] }}</li>
+          <img src="{{a[13]}}"/>
+            {% endfor %}
+
+                  <h3>Recommendation based on pages<h3>-->
+            {% for bp in recommendations_bookpages %}
+                      <p><input type = "submit" name = "title" value="{{ bp[10] }}"/></p>
+          <li>{{ bp[10] }}</li>
+          <li>{{ bp[5] }}</li>
+          <li>{{ bp[12] }}</li>
+          <li>{{ bp[16] }}</li>
+           <li>{{ bp[4] }}</li>
+          <img src="{{bp[13]}}"/>
+            {% endfor %}
+
+           <h3>Already Purchased books<h3>-->
+            {% for ap in purchased_books %}
+               <p><input type = "submit" name = "title" value="{{ ap[10] }}"/></p>
+          <li>{{ ap[12] }}</li>
+          <li>{{ ap[5] }}</li>
+          <li>{{ ap[12] }}</li>
+          <li>{{ ap.Price }}</li>
+          <li>{{ ap[16] }}</li>
+          <img src="{{ap[13]}}"/>
+            {% endfor %}
+
+         <p><input type = "submit" value = "Submit" /></p>
+      </form>
+   </body>
+</html>

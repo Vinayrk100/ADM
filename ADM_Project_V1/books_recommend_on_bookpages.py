@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+import re
+import sklearn.metrics.pairwise as pw
+from scipy import sparse
+from sklearn.metrics.pairwise import pairwise_distances
+from scipy.sparse.linalg import svds
+
+
+def recommend_books_author(userID):
+    books_details_df = pd.read_csv('C:/Users/Nikhita/Desktop/Dataset/Final/final_book_details.csv')
+    df_ratings = pd.read_csv('C:/Users/Nikhita/Desktop/Dataset/Final/ratings.csv')
+    df_books_ratings = df_ratings.pivot(
+        index='user_id',
+        columns='book_id',
+        values='rating'
+    ).fillna(0)
+
+    R = df_books_ratings.values
+    user_ratings_mean = np.mean(R, axis=1)
+    R_demeaned = R - user_ratings_mean.reshape(-1, 1)
+
+    U, sigma, Vt = svds(R_demeaned, k=50)
+
+    sigma = np.diag(sigma)
+
+    all_user_predicted_ratings = np.dot(np.dot(U, sigma), Vt) + user_ratings_mean.reshape(-1, 1)
+
+    preds_df = pd.DataFrame(all_user_predicted_ratings, columns=df_books_ratings.columns)
+
+    # Get and sort the user's predictions
+    user_row_number = userID  # UserID starts at 1, not 0
+    sorted_user_predictions = preds_df.iloc[user_row_number].sort_values(ascending=False)  # UserID starts at 1
+
+    # Get the user's data and merge in the book information.
+    user_data = df_ratings[df_ratings.user_id == userID]
+
+    user_full = (user_data.merge(books_details_df, how='left', on='book_id').sort_values(['rating_x'], ascending=False))
+
+    book_pages = user_full.book_pages.unique()
+    # Recommend the highest predicted rating books that the user hasn't seen yet.
+    recommendations = (books_details_df[~books_details_df['book_id'].isin(user_full['book_id']) &
+                                        books_details_df['book_pages'].isin(book_pages)]).merge(
+        pd.DataFrame(sorted_user_predictions).reset_index(), how='left', left_on='book_id',
+        right_on='book_id')
+
+    recommendations = recommendations.drop_duplicates()
+    recommendations = recommendations[1:6].sort_values(['rating'], ascending=False)
+    return user_full, recommendations
+
+
+already_rated, predictions = recommend_books_author(2)
+
+predictions.to_csv('C:/Users/Nikhita/Desktop/Dataset/Final/Output/pages_books_predictions_svd.csv')
+already_rated.to_csv('C:/Users/Nikhita/Desktop/Dataset/Final/Output/pages_books_already_rated_svd.csv')
